@@ -5,3 +5,4 @@
 ## 目录
 
 #### [JavaScript 运行原理 之 引擎, 运行时, 调用堆栈的概述](https://github.com/blackCY/blog-JavaScript/issues/1)
+#### [内存管理, 内存泄漏, GC](https://github.com/blackCY/blog-JavaScript/issues/2)
