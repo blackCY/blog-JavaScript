@@ -6,8 +6,8 @@
 
 ### 前戏
 
-###### 1.[前戏--进程与线程](https://github.com/blackCY/blog-JavaScript/issues/4)
-###### 2. [前戏--内存分配](https://github.com/blackCY/blog-JavaScript/issues/5)
+#### 1.[前戏--进程与线程](https://github.com/blackCY/blog-JavaScript/issues/4)
+#### 2. [前戏--内存分配](https://github.com/blackCY/blog-JavaScript/issues/5)
 
 ### 正文
 
