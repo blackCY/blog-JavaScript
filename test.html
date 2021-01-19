@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <!-- 
+    - [0.1+0.2 == 0.3 为啥不等 -- 【 二进制互转 】](https://www.bilibili.com/video/BV1Ga411F7uy)
+   -->
+  <body>
+    <div id="app"></div>
+    <div>
+      <span id="container">0</span>
+      <button id="btn">+</button>
+    </div>
+    <script>
+      // View Interface
+      const globalConfig = {
+        containerId: "container",
+        buttonId: "btn",
+      };
+    </script>
+
+    <script>
+      // Model
+      function add(num) {
+        return num + 1;
+      }
+    </script>
+
+    <script>
+      const container = document.getElementById(globalConfig.containerId);
+      const button = document.getElementById(globalConfig.buttonId);
+
+      // 响应视图指令
+      // 响应视图指令
+      button.addEventListener(
+        "click",
+        () => {
+          const currentValue = parseInt(container.innerText);
+          // 调用模型
+          const newValue = add(currentValue);
+          // 更新视图
+          container.innerText = newValue;
+        },
+        false
+      );
+    </script>
+  </body>
+</html>
