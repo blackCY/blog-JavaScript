@@ -1,0 +1,9 @@
+{
+  "first-line-heading": false,
+  "heading-increment": false,
+  "line-length": false,
+  "ol-prefix": false,
+  "no-emphasis-as-heading": false,
+  "no-trailing-punctuation": false,
+  "no-blanks-blockquote": false
+}

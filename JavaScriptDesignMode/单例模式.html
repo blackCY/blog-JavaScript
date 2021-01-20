@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>单例模式</title>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      class Singleton {
+        // 定义私有的静态属性，来保存对象实例
+        static #singleton;
+
+        // 提供一个静态的方法来获取对象实例
+        static getInstance() {
+          if (!Singleton.singleton) {
+            Singleton.singleton = new Singleton();
+          }
+          return Singleton.singleton;
+        }
+      }
+
+      const instance1 = Singleton.getInstance();
+      const instance2 = Singleton.getInstance();
+      console.log(instance1 === instance2);
+      console.log(Singleton.constructor)
+    </script>
+  </body>
+</html>

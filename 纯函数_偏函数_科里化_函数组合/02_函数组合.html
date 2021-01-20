@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>函数组合</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- https://github.com/mqyqingfeng/Blog/issues/45 -->
+    <script>
+      /** 组合函数
+       * 函数组合就是组合两到多个函数来生成一个新函数的过程, 将函数组合在一起, 就像将一连串管道口河在一起, 让数据流过一样
+       * 维基百科中定义:
+       *   在计算机科学中, 函数组合是将简单函数组合成更复杂函数的一种行为或机制, 就像数学中通常的函数组成一样, 每个函数的结果作为下一步函数的参数传递, 而最后一个函数的结果就是整个函数的结果
+       * 代码重用听起来很棒, 但是实现起来很难, 如果代码业务性过于具体, 就很难重用他, 如果代码太过简单, 又很少人使用, 所以我们需要平衡两者, 编写一种更小的, 可重用的部件的方法, 我们可以将其作为构建块来构建更复杂的功能
+       */
+      let add10 = function (val) {
+        return val + 10;
+      };
+      let mult5 = function (val) {
+        return val * 5;
+      };
+      // 上面写法有点冗长了, 我们使用箭头函数简写一下
+      let add10_2 = (val) => val + 10;
+      let mult5_2 = (val) => val * 5;
+      // 编写函数
+      let mult5AfterAdd10 = 5 * (val + 10);
+      // 尽管这是一个非常简单的例子, 但仍不想从头编写这个函数, 首先, 这里可能会犯一个错误, 比如忘记括号, 第二, 我们已经有了一个加10的函数和一个乘5的函数, 所以我们这里就已经再写重复代码了
+      // 使用 mlut5 和 add10 来重构 mult5AfterAdd10
+      var mult5AfterAdd10 = (val) => mult5(add10(val));
+      // 我们只是使用现有的函数来创建 mult5AfterAdd10, 但是还有更好的方法
+      // 在数学中， f ∘ g 是函数组合，叫作 "f 由 g 组合"，或者更常见的是 "f after g"。因此 (f ∘ g)(x) 等效于 f(g(x)) 表示调用 g 之后调用 f
+      // 在我们的例子中,我们有 mult5 ∘ add10 或 “add10 after mult5”,因此我们的函数的名称叫做 mult5AfterAdd10。由于Javascript本身不做函数组合，看看 Elm 是怎么写的
+      // add10 value =
+      //     value + 10
+      // mult5 value =
+      //     value * 5
+      // mult5AfterAdd10 value =
+      //     (mult5 << add10) value
+
+      // 在 Elm 中 << 表示使用组合函数，在上例中 value 传给函数 *** add10 *** 然后将其结果传递给 mult5。还可以这样组合任意多个函数:
+      // f x = (g << h << s << r << t) x
+      // 这里 x 传递给函数 t，函数 t 的结果传递给 r，函数 t 的结果传递给 s，以此类推。在Javascript中做类似的事情，它看起来会像 ***g(h(s(r(t(x)))))***，一个括号噩梦
+
+      // 常见的函数式函数(Functional Function)
+      // 函数式语言中3个常见的函数：Map,Filter,Reduce。
+      // 如下JavaScript代码：
+
+      //  for (var i = 0; i < something.length; ++i) {
+      //     // do stuff
+      //  }
+      // 这段代码存在一个很大的问题，但不是bug。问题在于它有很多重复代码(boilerplate code)。如果你用命令式语言来编程，比如Java，C#，JavaScript，PHP，Python等等，你会发现这样的代码你写地最多。这就是问题所在。
+
+      // 现在让我们一步一步的解决问题，最后封装成一个看不见 for 语法函数：
+
+      // 先用名为 things 的数组来修改上述代码：
+
+      // var things = [1, 2, 3, 4];
+      // for (var i = 0; i < things.length; ++i) {
+      //     things[i] = things[i] * 10; // 警告：值被改变!
+      // }
+      // console.log(things); // [10, 20, 30, 40]
+      // 这样做法很不对，数值被改变了！
+
+      // 在重新修改一次：
+
+      // var things = [1, 2, 3, 4];
+      // var newThings = [];
+      // for (var i = 0; i < things.length; ++i) {
+      //     newThings[i] = things[i] * 10;
+      // }
+      // console.log(newThings); // [10, 20, 30, 40]
+      // 这里没有修改***things***数值，但却却修改了***newThings***。暂时先不管这个，毕竟我们现在用的是 JavaScript。一旦使用函数式语言，任何东西都是不可变的。
+
+      // 现在将代码封装成一个函数，我们将其命名为 map，因为这个函数的功能就是将一个数组的每个值映射(map)到新数组的一个新值。
+
+      // var map = (f, array) => {
+      //     var newArray = [];
+      //     for (var i = 0; i < array.length; ++i) {
+      //         newArray[i] = f(array[i]);
+      //     }
+      //     return newArray;
+      // };
+      // 函数 f 作为参数传入，那么函数 map 可以对 array 数组的每项进行任意的操作。
+
+      // 现在使用 map 重写之前的代码：
+
+      // var things = [1, 2, 3, 4];
+      // var newThings = map(v => v * 10, things);
+      // 这里没有 for 循环！而且代码更具可读性，也更易分析。
+
+      // 现在让我们写另一个常见的函数来过滤数组中的元素:
+
+      // var filter = (pred, array) => {
+      //     var newArray = [];
+      // for (var i = 0; i < array.length; ++i) {
+      //         if (pred(array[i]))
+      //             newArray[newArray.length] = array[i];
+      //     }
+      //     return newArray;
+      // };
+      // 当某些项需要被保留的时候，断言函数 pred 返回TRUE，否则返回FALSE。
+
+      // 使用过滤器过滤奇数:
+
+      // var isOdd = x => x % 2 !== 0;
+      // var numbers = [1, 2, 3, 4, 5];
+      // var oddNumbers = filter(isOdd, numbers);
+      // console.log(oddNumbers); // [1, 3, 5]
+
+      // 比起用 for 循环的手动编程，filter 函数简单多了。最后一个常见函数叫reduce。通常这个函数用来将一个数列归约(reduce)成一个数值，但事实上它能做很多事情。
+
+      // 在函数式语言中，这个函数称为 fold。
+
+      // var reduce = (f, start, array) => {
+      //     var acc = start;
+      //     for (var i = 0; i < array.length; ++i)
+      //         acc = f(array[i], acc); // f() 有2个参数
+      //     return acc;
+      // });
+      // reduce函数接受一个归约函数 f，一个初始值 start，以及一个数组 array。
+
+      // 这三个函数，map,filter,reduce能让我们绕过for循环这种重复的方式，对数组做一些常见的操作。但在函数式语言中只有递归没有循环，这三个函数就更有用了。附带提一句，在函数式语言中，递归函数不仅非常有用，还必不可少。
+    </script>
+  </body>
+</html>

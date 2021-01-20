@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>建造者模式</title>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      class Car {
+        constructor(engine, chassis, body) {}
+      }
+
+      class CarBuilder {
+        engine;
+        chassis;
+        body;
+
+        addChassis(chassis) {
+          this.chassis = chassis;
+          return this;
+        }
+        addEngine(engine) {
+          this.engine = engine;
+          return this;
+        }
+        addBody(body) {
+          this.body = body;
+          return this;
+        }
+        build() {
+          return new Car(this.engine, this.chassis, this.body);
+        }
+      }
+
+      const car = new CarBuilder()
+        .addEngine("v12")
+        .addBody("镁合金")
+        .addChassis("复合材料")
+        .build();
+
+      console.log(car);
+    </script>
+  </body>
+</html>
