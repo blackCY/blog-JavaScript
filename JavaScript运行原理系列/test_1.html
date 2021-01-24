@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #some-id {
+        width: 100%;
+        height: 100px;
+        background-color: aqua;
+      }
+      input {
+        width: 200px;
+        height: 30px;
+      }
+
+      input {
+        -webkit-transition: all 0.3s ease-in-out;
+        -moz-transition: all 0.3s ease-in-out;
+        -ms-transition: all 0.3s ease-in-out;
+        -o-transition: all 0.3s ease-in-out;
+        outline: none;
+        padding: 3px 0 3px 12px;
+        margin: 5px 1px 3px 0;
+        border: 1px solid #ddd;
+        font-size: 18px;
+      }
+
+      input:focus {
+        box-shadow: 0 0 5px rgba(216, 76, 41, 1);
+        padding: 3px 0 3px 12px;
+        margin: 5px 1px 3px 0;
+        border: 1px solid rgba(216, 76, 41, 1);
+      }
+
+      #btn {
+        font-size: 18px;
+        font-family: Helvetica, Tahoma, Arial;
+        line-height: 1em; /*使用em作为单位，即使字体变化，按钮的整体样式也会按比例跟随变化*/
+        color: #fff;
+        background: linear-gradient(135deg, #fce, #cce);
+        padding: 0.5em 1.5em;
+        border-radius: 2em;
+        display: inline-block;
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="width: 200px" id="parent">
+      <div id="some-id"></div>
+    </div>
+    <input type="text" id="text" value="0" data-count="0" />
+    <button id="btn">增加</button>
+
+    <script>
+      function addCount(el) {
+        el.value++;
+      }
+
+      function modifyAttribute(el) {
+        console.log(++el.dataset.count);
+      }
+
+      function observe(el, options, callback) {
+        var MutationObserver =
+          window.MutationObserver ||
+          window.WebKitMutationObserver ||
+          window.MozMutationObserver;
+        var observer = new MutationObserver(callback);
+        observer.observe(el, options);
+      }
+      window.onload = () => {
+        var text = document.getElementById("text");
+        var btn = document.getElementById("btn");
+        btn.onclick = (e) => {
+          addCount(text);
+          modifyAttribute(text);
+        };
+        var options = {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeOldValue: true,
+          characterData: true,
+        };
+        observe(text, options, (records, instance) => {
+          console.log(records);
+          console.log(instance);
+          records.map((record) => {
+            console.log("Mutation Type: " + record.type);
+            console.log("Mutation Change Attribute: " + record.attributeName);
+            console.log("Previous attribute value: " + record.oldValue);
+          });
+        });
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="text"></div>
+
+    <script>
+      // var text = document.querySelector("#text");
+      // var genTimer = (string, delay = 0, cb) => {
+      //   return () => {
+      //     setTimeout(() => {
+      //       text.innerHTML += string + "<br/>";
+      //       !cb || cb();
+      //     }, delay * 1000);
+      //   };
+      // };
+      // var macroTasks = [];
+      // // 在下次事件循环中，新增一个普通任务，
+      // macroTasks.push(
+      //   genTimer(
+      //     "01:Better to light one candle \
+      //                      than to curse the darkness.",
+      //     3
+      //   )
+      // );
+      // // 新增一个超长事件的阻塞任务。
+      // // 阻塞时长3s
+      // macroTasks.push(
+      //   genTimer("XXXXXblocking long time!", 3, () => {
+      //     console.log("i am running!");
+      //     let c = Date.now();
+      //     while (Date.now() - c <= 10000);
+      //   })
+      // );
+      // text.innerHTML += "hello<br>";
+      // macroTasks.forEach((f) => f());
+      // text.innerHTML += "byebye!<br>";
+    </script>
+
+    <script>
+      // setTimeout(() => {
+      //   console.log("time1");
+      // }, 1000);
+
+      // Promise.resolve().then(() => {
+      //   console.log("then1");
+
+      //   setTimeout(() => {
+      //     console.log("time3");
+      //   }, 1000);
+      // });
+
+      // setTimeout(() => {
+      //   console.log("time2");
+      // }, 1000);
+    </script>
+
+    <script>
+      // console.log("script start");
+      // async function async1() {
+      //   await async2();
+      //   console.log("async1 end");
+      // }
+      // async function async2() {
+      //   console.log("async2 end");
+      // }
+      // setTimeout(function () {
+      //   console.log("setTimeout");
+      // }, 0);
+      // new Promise((resolve) => {
+      //   console.log("Promise");
+      //   resolve();
+      // })
+      //   .then(function () {
+      //     console.log("promise1");
+      //   })
+      //   .then(function () {
+      //     console.log("promise2");
+      //   });
+      // async1();
+      // console.log("script end");
+    </script>
+
+    <script>
+      // Promise.resolve()
+      //   .then(() => {
+      //     console.log(1);
+      //   })
+      //   .then(() => {
+      //     console.log(2);
+      //   });
+
+      // Promise.resolve()
+      //   .then(() => {
+      //     console.log(3);
+      //   })
+      //   .then(() => {
+      //     console.log(4);
+      //   });
+    </script>
+  </body>
+</html>

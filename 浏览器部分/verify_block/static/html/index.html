@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      div {
+        width: 400px;
+        height: 400px;
+        background: red;
+      }
+    </style>
+    <!-- 1. link 进来的 css 阻塞页面渲染 -->
+    <link rel="stylesheet" href="../css/sleep-6000-common.css" />
+
+    <!-- 2. defer 和 async 的作用 -->
+    <!-- <script defer src="../js/logDiv.js"></script> -->
+    <!-- <script async src="../js/logDiv.js"></script> -->
+
+    <!-- 3. link 进来的 css 不阻塞页面解析 -->
+    <!-- <link rel="stylesheet" href="../css/sleep-3000-common.css" /> -->
+    <!-- <script src="../js/logDiv.js"></script> -->
+
+    <!-- 
+      <link rel="stylesheet" href="../css/sleep-3000-common.css" />
+      <script src="../js/block.js"></script>
+
+      一开始, 浏览器会去下载 common.css 和 block.js 文件, 注意浏览器加载资源是不会被任何东西阻塞的, 在下载的过程中, 由于 link 不会阻塞 DOM 的解析, 但是 DOM 的解析会被 link 下方的 script 阻塞, 再来看 common.css 和 block.js 的加载, 由于资源加载是不会被阻塞的, 所以当一开始都去服务器请求资源的时候, 由于 common.css 需要 3s 后服务器才会返回, 所以 common.css 的加载一定是会比 block.js 慢的, 一定是 block.js 先加载完成, 但是要注意的是, 虽然 block.js 先加载完成, 但是资源加载完成以后, 何时执行是浏览器自行调度的, 所以 block.js 加载完成并不会立马执行, 由于这时浏览器不知道在 block.js 是否会去操作 DOM, 所以不会执行, 而是会等待 common.css 加载完成, 并解析完成以后才回去执行 block.js
+
+      结果: https://www.bilibili.com/read/cv7142810/
+      这片文章里之所以说, 在 head 里同时有 link 和 script 的同时, 最好将 script 放在 link 之前, 是因为 link 的 css 文件如果比较大, 或者因为网络不好的情况下加载较慢的话就会阻塞 script 中 js 的执行, 当然 script 一般放在 body 底部, 无关因为什么原因需要将 script 放在 head, 请保证里面没有操作 DOM 的 js 代码
+    -->
+
+    <!-- 4. js 阻塞页面解析 -->
+    <!-- <script src="../js/block.js"></script> -->
+    <!-- <script defer src="../js/logDiv.js"></script> -->
+
+    <!-- 5. js 阻塞页面渲染 -->
+  </head>
+  <body>
+    <div></div>
+    <!-- <img src="../../../加载block.js.PNG" alt=""> -->
+    <!-- <img src="../../../加载sleep-3000-common.css.PNG" alt=""> -->
+    <!-- <img src="../../../解析sleep-3000-common.css.PNG" alt=""> -->
+    <!-- <img src="../../../执行block.js.PNG" alt=""> -->
+    <!-- <script src="../js/block.js"></script> -->
+    <!-- <script src="../js/sleep-3000-logDiv.js"></script>
+    <style>
+      div {
+        background: lightcoral;
+      }
+    </style>
+    <script src="../js/sleep-6000-logDiv.js"></script>
+    <link rel="stylesheet" href="../css/common.css"> -->
+    <!-- 在 performance 面板页, 可以看到即使 css 请求在最后, 但是浏览器还是会先去发送 css 的请求, 然后是发送 js 的请求(现代的浏览器很聪明, 他会开启一个进程, 如果发现之后的 DOM 有 link, script, img 标签等, 他会帮助我们先行下载里面的资源, 不会等到解析到那里时才开始下载)-->
+    <!-- 每次碰到 script 标签时, 浏览器都会渲染一次页面, 这也是基于同样的理由, 浏览器不知道脚本的内容, 因而碰到脚本时, 只好先渲染页面, 确保脚本能够获取最新的 DOM 元素信息, 尽管脚本可能不需要这些信息 -->
+  </body>
+</html>

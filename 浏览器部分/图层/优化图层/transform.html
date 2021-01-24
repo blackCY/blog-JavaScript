@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #app {
+        /* position: relative; */
+        transform: translateX(0);
+        width: 100px;
+        height: 100px;
+        background: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      const app = document.getElementById("app");
+
+      setTimeout(() => {
+        // app.style.left = "200px";
+        // 使用 transform
+        app.style.transform = 'translateX(200px)'
+      }, 2000);
+    </script>
+  </body>
+</html>

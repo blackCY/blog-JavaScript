@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      canvas {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        background-color: grey;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="400" height="400"></canvas>
+
+    <script>
+      let canvas = document.querySelector("canvas");
+      if (canvas.getContext) {
+        var ctx = canvas.getContext("2d");
+        ctx.fillRect(0, 0, 100, 100);
+        ctx.strokeRect(100, 100, 100, 100);
+      }
+    </script>
+  </body>
+</html>
