@@ -14,38 +14,49 @@
       <span id="container">0</span>
       <button id="btn">+</button>
     </div>
+
+    <iframe src="./index.html" frameborder="1"></iframe>
+    
     <script>
       // View Interface
       const globalConfig = {
-        containerId: "container",
-        buttonId: "btn",
-      };
-    </script>
-
-    <script>
-      // Model
-      function add(num) {
-        return num + 1;
+        containerId: 'container',
+        buttonId: 'btn'
       }
     </script>
 
     <script>
-      const container = document.getElementById(globalConfig.containerId);
-      const button = document.getElementById(globalConfig.buttonId);
+      console.log(parent.parent)
+      console.log(this)
+      console.log()
+      // Model
+      function add(num) {
+        return num + 1
+      }
+      let a = 1
+      console.log(this.a)
+      console.log(this.add)
+      console.log(this.add2)
+      console.log(window.a)
+    </script>
+
+    <script>
+      const container = document.getElementById(globalConfig.containerId)
+      const button = document.getElementById(globalConfig.buttonId)
 
       // 响应视图指令
       // 响应视图指令
       button.addEventListener(
-        "click",
+        'click',
         () => {
-          const currentValue = parseInt(container.innerText);
+          const currentValue = parseInt(container.innerText)
           // 调用模型
-          const newValue = add(currentValue);
+          const newValue = add(currentValue)
           // 更新视图
-          container.innerText = newValue;
+          container.innerText = newValue
         },
         false
-      );
+      )
     </script>
   </body>
 </html>

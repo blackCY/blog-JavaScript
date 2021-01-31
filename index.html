@@ -6,10 +6,10 @@
     <title>Document</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">index页面</div>
 
     <script>
-      var a = 1,
+      /* var a = 1,
         b = 2
 
       var test = function () {
@@ -23,7 +23,24 @@
 
       var t = test()
 
-      t(4)
+      t(4) */
+    </script>
+
+    <script>
+      function add2() {}
+      let a = 1
+      console.log(parent.add2)
+      console.log(parent.a)
+    </script>
+
+    <script>
+      var obj = {
+        ['prop' +
+        (function () {
+          return 42
+        })()]: 42
+      }
+      console.log(obj)
     </script>
   </body>
 </html>
