@@ -6,116 +6,325 @@
 
 [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
 
-> The static method Object.defineProperty() defines a new property directly on an object, or modifies an existing property on an object, and returns the object.
+Object.defineProperty() 方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回此对象。
 
-> Property descriptors present in objects come in two main flavors: data descriptors and accessor descriptors. A data descriptor is a property that has a value, which may or may not be writable. An accessor descriptor is a property described by a getter-setter pair of functions. A descriptor must be one of these two flavors; it cannot be both.
+备注：应当直接在 Object 构造器对象上调用此方法，而不是在任意一个 Object 类型的实例上调用。
 
-> Both data and accessor descriptors are objects. They share the following optional keys (please note: the defaults mentioned here are in the case of defining properties using Object.defineProperty()):
+**在 ES6 中，由于 Symbol 类型的特殊性，用 Symbol 类型的值来做对象的 key 与常规的定义或修改不同，而 Object.defineProperty 是定义 key 为 Symbol 的属性的方法之一。**
 
-> configurable
-> true if the type of this property descriptor may be changed and if the property may be deleted from the corresponding object.
-> Defaults to false.
+该方法允许精确地添加或修改对象的属性。通过赋值操作添加的普通属性是可枚举的，在枚举对象属性时会被枚举到（for...in 或 Object.keys 方法），可以改变这些属性的值，也可以删除这些属性。这个方法允许修改默认的额外选项（或配置）。默认情况下，使用 Object.defineProperty() 添加的属性值是不可修改（immutable）的。
 
-> enumerable
-> true if and only if this property shows up during enumeration of the properties on the corresponding object.
-> Defaults to false.
+对象里目前存在的属性描述符有两种主要形式：数据描述符和存取描述符。数据描述符是一个具有值的属性，该值可以是可写的，也可以是不可写的。存取描述符是由 getter 函数和 setter 函数所描述的属性。**一个描述符只能是这两者其中之一；不能同时是两者。**
 
-> A data descriptor also has the following optional keys:
+这两种描述符都是对象。它们共享以下可选键值（默认值是指在使用 Object.defineProperty() 定义属性时的默认值）：
 
-> value
-> The value associated with the property. Can be any valid JavaScript value (number, object, function, etc).
-> Defaults to undefined.
+- configurable
+  当且仅当该属性的 configurable 键值为 true 时，该属性的描述符才能够被改变，同时该属性也能从对应的对象上被删除。
+  默认为 false。
 
-> writable
-> true if the value associated with the property may be changed with an assignment operator.
-> Defaults to false.
+  1. 属性是否可以被删除
+  2. 属性的特性在第一次设置之后可否被重新定义特性
 
-> An accessor descriptor also has the following optional keys:
+- enumerable
+  当且仅当该属性的 enumerable 键值为 true 时，该属性才会出现在对象的枚举属性中。
+  默认为 false。
 
-> get
-> A function which serves as a getter for the property, or undefined if there is no getter. When the property is accessed, this function is called without arguments and with this set to the object through which the property is accessed (this may not be the object on which the property is defined due to inheritance). The return value will be used as the value of the property.
-> Defaults to undefined.
+数据描述符还具有以下可选键值：
 
-> set
-> A function which serves as a setter for the property, or undefined if there is no setter. When the property is assigned, this function is called with one argument (the value being assigned to the property) and with this set to the object through which the property is assigned.
-> Defaults to undefined.
+- value
+  该属性对应的值。可以是任何有效的 JavaScript 值（数值，对象，函数等）。
+  默认为 undefined。
+- writable
+  当且仅当该属性的 writable 键值为 true 时，属性的值，也就是上面的 value，才能被赋值运算符改变。
+  默认为 false。
 
-> Bear in mind that these attributes are not necessarily the descriptor's own properties. Inherited properties will be considered as well. In order to ensure these defaults are preserved, you might freeze the Object.prototype upfront, specify all options explicitly, or point to null with Object.create(null).
+存取描述符还具有以下可选键值：
 
-> **The configurable attribute controls at the same time whether the property can be deleted from the object and whether its attributes (other than value and writable) can be changed.**
+- get
+  属性的 getter 函数，如果没有 getter，则为 undefined。当访问该属性时，会调用此函数。执行时不传入任何参数，但是会传入 this 对象（由于继承关系，这里的 this 并不一定是定义该属性的对象）。该函数的返回值会被用作属性的值。
+  默认为 undefined。
+- set
+  属性的 setter 函数，如果没有 setter，则为 undefined。当属性值被修改时，会调用此函数。该方法接受一个参数（也就是被赋予的新值），会传入赋值时的 this 对象。
+  默认为 undefined。
+
+描述符默认值汇总：
+
+- 拥有布尔值的键 configurable、enumerable 和 writable 的默认值都是 false。
+- 属性值和函数的键 value、get 和 set 字段的默认值为 undefined。
+
+**如果一个描述符不具有 value、writable、get 和 set 中的任意一个键，那么它将被认为是一个数据描述符。**
+如果一个描述符同时拥有 value 或 writable 和 get 或 set 键，则会产生一个异常。
+
+记住，这些选项不一定是自身属性，也要考虑继承来的属性。为了确认保留这些默认值，在设置之前，可能要冻结 [Object.prototype](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/prototype)，明确指定所有的选项，或者通过 [Object.create(null)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create) 将 [**proto**](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/__proto__) 属性指向 [null](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/null)
 
 ```js
-var o = {};
-Object.defineProperty(o, "a", {
-  get() {
-    return 1;
-  },
+// 使用 __proto__
+var obj = {}
+var descriptor = Object.create(null) // 没有继承的属性
+// 默认没有 enumerable，没有 configurable，没有 writable
+descriptor.value = 'static'
+Object.defineProperty(obj, 'key', descriptor)
+
+// 显式
+Object.defineProperty(obj, 'key', {
+  enumerable: false,
   configurable: false,
-});
+  writable: false,
+  value: 'static'
+})
 
-Object.defineProperty(o, "a", {
-  configurable: true,
-}); // throws a TypeError
-Object.defineProperty(o, "a", {
-  enumerable: true,
-}); // throws a TypeError
-Object.defineProperty(o, "a", {
-  set() {},
-}); // throws a TypeError (set was undefined previously)
-Object.defineProperty(o, "a", {
-  get() {
-    return 1;
-  },
-}); // throws a TypeError
-// (even though the new get does exactly the same thing) // 尽管重新定义的 get 结果和上面一样，但还是会报错
-Object.defineProperty(o, "a", {
-  value: 12,
-}); // throws a TypeError // ('value' can be changed when 'configurable' is false but not in this case due to 'get' accessor)
+// 循环使用同一对象
+function withValue(value) {
+  var d =
+    withValue.d ||
+    (withValue.d = {
+      enumerable: false,
+      writable: false,
+      configurable: false,
+      value: null
+    })
+  d.value = value
+  return d
+}
+// ... 并且 ...
+Object.defineProperty(obj, 'key', withValue('static'))
 
-console.log(o.a); // logs 1
-delete o.a; // Nothing happens
-console.log(o.a); // logs 1
+// 如果 freeze 可用, 防止后续代码添加或删除对象原型的属性
+// （value, get, set, enumerable, writable, configurable）
+;(Object.freeze || Object)(Object.prototype)
 ```
 
-### 一个例子
+如果你想了解如何使用 Object.defineProperty 方法和类二进制标记语法，可以看看这些[额外示例](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/defineProperty/Additional_examples)。
+
+- 修改属性
+
+如果属性已经存在，Object.defineProperty()将尝试根据描述符中的值以及对象当前的配置来修改这个属性。如果旧描述符将其 configurable 属性设置为 false，则该属性被认为是"不可配置的"，并且没有属性可以被改变（除了单向改变 writable 为 false）。当属性不可配置时，不能在数据和访问器属性类型之间切换。
+
+如果属性已经存在，Object.defineProperty()将尝试根据描述符中的值以及对象当前的配置来修改这个属性。如果旧描述符将其 configurable 属性设置为 false，则该属性被认为是"不可配置的"，并且没有属性可以被改变（除了单向改变 writable 为 false）。当属性不可配置时，不能在数据和访问器属性类型之间切换。
+
+当试图改变不可配置属性（除了 value 和 writable 属性之外）的值时，会抛出 TypeError，除非当前值和新值相同。
+
+- Writable 属性
+
+当 writable 属性设置为 false 时，该属性被称为“不可写的”。它不能被重新赋值。
 
 ```js
-const target = Object.defineProperty({}, "a", {
-  value: 1,
-});
-console.log(target);
-const res = Object.assign(target, { b: 2 }, { b: 3, a: 100 }, { c: 4 });
+var o = {} // 创建一个新对象
+
+Object.defineProperty(o, 'a', {
+  value: 37,
+  writable: false
+})
+
+console.log(o.a) // logs 37
+o.a = 25 // No error thrown
+// (it would throw in strict mode,
+// even if the value had been the same)
+console.log(o.a) // logs 37. The assignment didn't work.
+
+// strict mode
+;(function () {
+  'use strict'
+  var o = {}
+  Object.defineProperty(o, 'b', {
+    value: 2,
+    writable: false
+  })
+  o.b = 3 // throws TypeError: "b" is read-only
+  return o.b // returns 2 without the line above
+})()
 ```
 
-结果如下:
+如示例所示，试图写入非可写属性不会改变它，也不会引发错误。
 
-![](image/00_Object/1607948751896.png)
+- Enumerable 属性
 
-原因是在 a 通过 get 给 target, target 准备通过 set 赋值的时候，才报错，所以能拿到 b
+enumerable 定义了对象的属性是否可以在 for...in 循环和 Object.keys() 中被枚举。
 
-### MDN 官网例子
+```js
+var o = {}
+Object.defineProperty(o, 'a', { value: 1, enumerable: true })
+Object.defineProperty(o, 'b', { value: 2, enumerable: false })
+Object.defineProperty(o, 'c', { value: 3 }) // enumerable 默认为 false
+o.d = 4 // 如果使用直接赋值的方式创建对象的属性，则 enumerable 为 true
+Object.defineProperty(o, Symbol.for('e'), {
+  value: 5,
+  enumerable: true
+})
+Object.defineProperty(o, Symbol.for('f'), {
+  value: 6,
+  enumerable: false
+})
 
-#### 继承属性
+for (var i in o) {
+  console.log(i)
+}
+// logs 'a' and 'd' (in undefined order)
+
+Object.keys(o) // ['a', 'd']
+
+o.propertyIsEnumerable('a') // true
+o.propertyIsEnumerable('b') // false
+o.propertyIsEnumerable('c') // false
+o.propertyIsEnumerable('d') // true
+o.propertyIsEnumerable(Symbol.for('e')) // true
+o.propertyIsEnumerable(Symbol.for('f')) // false
+
+var p = { ...o }
+p.a // 1
+p.b // undefined
+p.c // undefined
+p.d // 4
+p[Symbol.for('e')] // 5
+p[Symbol.for('f')] // undefined
+```
+
+- Configurable 属性
+
+configurable 特性表示对象的属性是否可以被删除，以及除 value 和 writable 特性外的其他特性是否可以被修改。
+
+属性的特性在第一次设置之后可否被重新定义特性
+
+```js
+var o = {}
+Object.defineProperty(o, 'a', {
+  get() {
+    return 1
+  },
+  configurable: false
+})
+
+Object.defineProperty(o, 'a', {
+  configurable: true
+}) // throws a TypeError
+Object.defineProperty(o, 'a', {
+  enumerable: true
+}) // throws a TypeError
+Object.defineProperty(o, 'a', {
+  set() {}
+}) // throws a TypeError (set was undefined previously)
+Object.defineProperty(o, 'a', {
+  get() {
+    return 1
+  }
+}) // throws a TypeError
+// (even though the new get does exactly the same thing)
+Object.defineProperty(o, 'a', {
+  value: 12
+}) // throws a TypeError // ('value' can be changed when 'configurable' is false but not in this case due to 'get' accessor)
+
+console.log(o.a) // logs 1
+delete o.a // Nothing happens
+console.log(o.a) // logs 1
+```
+
+如果 o.a 的 configurable 属性为 true，则不会抛出任何错误，并且，最后，该属性会被删除。
+
+- 添加多个属性和默认值
+
+考虑特性被赋予的默认特性值非常重要，通常，使用点运算符和 Object.defineProperty() 为对象的属性赋值时，数据描述符中的属性默认值是不同的，如下例所示。
+
+```js
+var o = {}
+
+o.a = 1
+// 等同于：
+Object.defineProperty(o, 'a', {
+  value: 1,
+  writable: true,
+  configurable: true,
+  enumerable: true
+})
+
+// 另一方面，
+Object.defineProperty(o, 'a', { value: 1 })
+// 等同于：
+Object.defineProperty(o, 'a', {
+  value: 1,
+  writable: false,
+  configurable: false,
+  enumerable: false
+})
+```
+
+- 自定义 Setters 和 Getters
+
+下面的例子展示了如何实现一个自存档对象。当设置 temperature 属性时，archive 数组会收到日志条目。
+
+```js
+function Archiver() {
+  var temperature = null
+  var archive = []
+
+  Object.defineProperty(this, 'temperature', {
+    get: function () {
+      console.log('get!')
+      return temperature
+    },
+    set: function (value) {
+      temperature = value
+      archive.push({ val: temperature })
+    }
+  })
+
+  this.getArchive = function () {
+    return archive
+  }
+}
+
+var arc = new Archiver()
+arc.temperature // 'get!'
+arc.temperature = 11
+arc.temperature = 13
+arc.getArchive() // [{ val: 11 }, { val: 13 }]
+```
+
+- 下面这个例子中，getter 总是会返回一个相同的值。
+
+```js
+var pattern = {
+  get: function () {
+    return 'I alway return this string,whatever you have assigned'
+  },
+  set: function () {
+    this.myname = 'this is my name string'
+  }
+}
+
+function TestDefineSetAndGet() {
+  Object.defineProperty(this, 'myproperty', pattern)
+}
+
+var instance = new TestDefineSetAndGet()
+instance.myproperty = 'test'
+
+// 'I alway return this string,whatever you have assigned'
+console.log(instance.myproperty)
+// 'this is my name string'
+console.log(instance.myname)
+```
+
+- 继承属性
 
 如果访问者的属性是被继承的，它的 get 和 set 方法会在子对象的属性被访问或者修改时被调用。如果这些方法用一个变量存值，该值会被所有对象共享。
 
 ```js
 function myclass() {}
 
-var value;
-Object.defineProperty(myclass.prototype, "x", {
+var value
+Object.defineProperty(myclass.prototype, 'x', {
   get() {
-    return value;
+    return value
   },
   set(x) {
-    value = x;
-  },
-});
+    value = x
+  }
+})
 
-var a = new myclass();
-var b = new myclass();
-a.x = 1;
-console.log(b.x); // 1
+var a = new myclass()
+var b = new myclass()
+a.x = 1
+console.log(b.x) // 1
 ```
 
 这可以通过将值存储在另一个属性中解决。在 get 和 set 方法中，this 指向某个被访问和修改属性的对象。
@@ -123,19 +332,19 @@ console.log(b.x); // 1
 ```js
 function myclass() {}
 
-Object.defineProperty(myclass.prototype, "x", {
+Object.defineProperty(myclass.prototype, 'x', {
   get() {
-    return this.stored_x;
+    return this.stored_x
   },
   set(x) {
-    this.stored_x = x;
-  },
-});
+    this.stored_x = x
+  }
+})
 
-var a = new myclass();
-var b = new myclass();
-a.x = 1;
-console.log(b.x); // undefined
+var a = new myclass()
+var b = new myclass()
+a.x = 1
+console.log(b.x) // undefined
 ```
 
 不像访问者属性，值属性始终在对象自身上设置，而不是一个原型。然而，如果一个不可写的属性被继承，它仍然可以防止修改对象的属性。
@@ -143,20 +352,73 @@ console.log(b.x); // undefined
 ```js
 function myclass() {}
 
-myclass.prototype.x = 1;
-Object.defineProperty(myclass.prototype, "y", {
+myclass.prototype.x = 1
+Object.defineProperty(myclass.prototype, 'y', {
   writable: false,
-  value: 1,
-});
+  value: 1
+})
 
-var a = new myclass();
-a.x = 2;
-console.log(a.x); // 2
-console.log(myclass.prototype.x); // 1
-a.y = 2; // Ignored, throws in strict mode
-console.log(a.y); // 1
-console.log(myclass.prototype.y); // 1
+var a = new myclass()
+a.x = 2
+console.log(a.x) // 2
+console.log(myclass.prototype.x) // 1
+a.y = 2 // Ignored, throws in strict mode
+console.log(a.y) // 1
+console.log(myclass.prototype.y) // 1
 ```
+
+这里值得注意的是，使用 vite 搭建的服务器下好像默认了严格模式，都会抛出错误，而 127.0.0.1 下的本地服务器则不会
+
+### 一些例子
+
+```js
+var o = {}
+Object.defineProperty(o, 'a', {
+  get() {
+    return 1
+  },
+  configurable: false
+})
+
+Object.defineProperty(o, 'a', {
+  configurable: true
+}) // throws a TypeError
+Object.defineProperty(o, 'a', {
+  enumerable: true
+}) // throws a TypeError
+Object.defineProperty(o, 'a', {
+  set() {}
+}) // throws a TypeError (set was undefined previously)
+Object.defineProperty(o, 'a', {
+  get() {
+    return 1
+  }
+}) // throws a TypeError
+// (even though the new get does exactly the same thing) // 尽管重新定义的 get 结果和上面一样，但还是会报错
+Object.defineProperty(o, 'a', {
+  value: 12
+}) // throws a TypeError // ('value' can be changed when 'configurable' is false but not in this case due to 'get' accessor)
+
+console.log(o.a) // logs 1
+delete o.a // Nothing happens
+console.log(o.a) // logs 1
+```
+
+### 一个例子
+
+```js
+const target = Object.defineProperty({}, 'a', {
+  value: 1
+})
+console.log(target)
+const res = Object.assign(target, { b: 2 }, { b: 3, a: 100 }, { c: 4 })
+```
+
+结果如下:
+
+![](image/00_Object/1607948751896.png)
+
+原因是在 a 通过 get 给 target, target 准备通过 set 赋值的时候，才报错，所以能拿到 b
 
 ## Object.assign
 
@@ -171,32 +433,32 @@ console.log(myclass.prototype.y); // 1
 ```js
 const test1 = {
   a: 1,
-  b: 2,
-};
+  b: 2
+}
 const test2 = {
   b: 3,
-  c: 4,
-};
+  c: 4
+}
 const test3 = {
   c: 5,
-  d: 6,
-};
+  d: 6
+}
 
-const test4 = Object.assign(test1, test2, test3);
+const test4 = Object.assign(test1, test2, test3)
 
-console.log(test1);
-console.log(test2);
-console.log(test3);
-console.log(test4);
-console.log(test1 === test4);
+console.log(test1)
+console.log(test2)
+console.log(test3)
+console.log(test4)
+console.log(test1 === test4)
 ```
 
 ```js
 Object.assign = function (target /* 目标对象 */, ...sources /* 源对象 */) {
   // 可枚举的源对象 sources 将自身的属性分配给 target， 即 target 和 接收对象是同一个引用， 即 console.log(test1 === test4);
   // 分配操作是: sources getter -> target setter
-  return target;
-};
+  return target
+}
 ```
 
 ```js
@@ -204,17 +466,17 @@ let obj = Object.create(
   { a: 1 },
   {
     b: {
-      value: 2,
+      value: 2
     },
     c: {
       value: 3,
       enumerable: true,
-      writable: true,
-    },
+      writable: true
+    }
   }
-);
-const newObj = Object.assign({}, obj);
-console.log(newObj);
+)
+const newObj = Object.assign({}, obj)
+console.log(newObj)
 // 结果如下图，如 MDN 所说，assign 只会将源对象自己的和可枚举的属性分配给目标对象，是不会将源对象的属性描述符给 target 的，因此 newObj 只有 c
 ```
 
@@ -224,22 +486,22 @@ let obj = Object.create(
   {
     b: {
       value: 2,
-      enumerable: true,
+      enumerable: true
     },
     c: {
       value: 3,
       enumerable: true,
-      writable: true,
-    },
+      writable: true
+    }
   }
-);
-const newObj = Object.assign({}, obj);
+)
+const newObj = Object.assign({}, obj)
 // 现在 newObj 有 {b: 2, c:3}
 // 然后我们删除 b
-delete newObj.b; // {c: 3}
+delete newObj.b // {c: 3}
 // 发现能够删的掉，说明，目标对象知识源对象将自己的键值对分配了过去，不管描述符，目标对象只接收源对象的键值对
 for (let k in newObj) {
-  console.log(k, newObj[k]);
+  console.log(k, newObj[k])
 }
 ```
 
@@ -251,11 +513,11 @@ for (let k in newObj) {
 const source = {
   a: 1,
   get b() {
-    return 2;
-  },
-};
-const res = Object.assign({}, source);
-console.log(res);
+    return 2
+  }
+}
+const res = Object.assign({}, source)
+console.log(res)
 ```
 
 ![](image/00_Object/1607964571763.png)
@@ -266,25 +528,25 @@ console.log(res);
 const source = {
   a: 1,
   get b() {
-    return 2;
-  },
-};
+    return 2
+  }
+}
 
 Object.myAssign = function (target, ...sources) {
   sources.forEach((source) => {
     const desciptors = Object.keys(source).reduce((desciptors, key) => {
-      desciptors[key] = Object.getOwnPropertyDescriptor(source, key);
+      desciptors[key] = Object.getOwnPropertyDescriptor(source, key)
 
-      return desciptors;
-    }, {});
-    Object.defineProperties(target, desciptors);
-  });
+      return desciptors
+    }, {})
+    Object.defineProperties(target, desciptors)
+  })
 
-  return target;
-};
+  return target
+}
 
-const res = Object.myAssign({}, source);
-console.log(res);
+const res = Object.myAssign({}, source)
+console.log(res)
 ```
 
 ![](image/00_Object/1607965316112.png)
@@ -314,31 +576,31 @@ let obj = Object.create(
       value: 2,
       configurable: false,
       enumerable: false,
-      writable: false,
+      writable: false
     },
     c: {
-      value: 3,
-    },
+      value: 3
+    }
   }
-);
+)
 
 for (var k in obj) {
-  console.log(k, obj[k]);
+  console.log(k, obj[k])
 }
 ```
 
 ## 一个面试题
 
 ```js
-const v1 = 123;
-const v2 = "123";
-const v3 = true;
-const v4 = function test() {};
-const v5 = [4, 5, 6];
+const v1 = 123
+const v2 = '123'
+const v3 = true
+const v4 = function test() {}
+const v5 = [4, 5, 6]
 
-const v6 = Object.assign({}, v1, v2, v3, v4, v5);
+const v6 = Object.assign({}, v1, v2, v3, v4, v5)
 
-console.log(v6);
+console.log(v6)
 ```
 
 结果如下图:
@@ -408,110 +670,110 @@ TypeError: Cannot freeze array buffer views with elements
 > What is "shallow freeze"?
 > The result of calling Object.freeze(object) only applies to the immediate properties of object itself and will prevent future property addition, removal or value re-assignment operations only on object. If the value of those properties are objects themselves, those objects are not frozen and may be the target of property addition, removal or value re-assignment operations.
 
-> 什么是“浅冻结”?
+> 什么是"浅冻结"?
 > 调用 object. freeze(object)的结果仅适用于对象本身的当前属性，并将防止未来仅对对象进行属性添加、移除或值重新赋值操作。如果这些属性的值是对象本身，那么这些对象不会被冻结，并且可能是属性添加、删除或值重新分配操作的目标。
 
 ```js
 function Test() {
-  this.a = 1;
-  this.b = 2;
+  this.a = 1
+  this.b = 2
 }
 
-Test.prototype.c = 3;
-Test.prototype.d = 4;
+Test.prototype.c = 3
+Test.prototype.d = 4
 
-const test = new Test();
+const test = new Test()
 
 // 冻结之前修改是可行的
-const newTest = Object.freeze(test);
+const newTest = Object.freeze(test)
 // console.log(newTest === test);
 
-console.log(test.a); // find
+console.log(test.a) // find
 
-test.d = 4; // add
-console.log(test); // 不可增加
+test.d = 4 // add
+console.log(test) // 不可增加
 
-test.a = 111; // update
-console.log(test); // 不可修改
+test.a = 111 // update
+console.log(test) // 不可修改
 
-delete test.a; // delete
-console.log(test); // 不可删除
+delete test.a // delete
+console.log(test) // 不可删除
 
-Test.prototype.c = 333; // 通过构造函数原型属性更改其属性是可以的
-console.log(test);
+Test.prototype.c = 333 // 通过构造函数原型属性更改其属性是可以的
+console.log(test)
 
-test.__proto__.d = 444; // 通过对象的 proto 更改原型上的属性是可以的
-console.log(test);
+test.__proto__.d = 444 // 通过对象的 proto 更改原型上的属性是可以的
+console.log(test)
 
 // 报错， test is not extensible，原型对象是不可重写的，但是原型上的属性是可以更改的， 因为这是浅冻结
 test.__proto__ = {
   a: 1,
   b: 2,
-  c: 3,
-};
-console.log(test);
+  c: 3
+}
+console.log(test)
 ```
 
 ```js
-"use strict";
+'use strict'
 function Test() {
-  this.a = 1;
-  this.b = 2;
+  this.a = 1
+  this.b = 2
 }
 
-Test.prototype.c = 3;
-Test.prototype.d = 4;
+Test.prototype.c = 3
+Test.prototype.d = 4
 
-const test = new Test();
+const test = new Test()
 
-const newObj = Object.seal(test);
-console.log(newObj);
+const newObj = Object.seal(test)
+console.log(newObj)
 // newObj.__proto__ = {}; // 报错
 // Test.prototype.c = 123; // 可行
-Test.prototype = {}; // 不行，因为已经实例化了
-console.log(newObj);
+Test.prototype = {} // 不行，因为已经实例化了
+console.log(newObj)
 
-const frObj = Object.freeze(test);
-Test.prototype.c = 234; // 可行
+const frObj = Object.freeze(test)
+Test.prototype.c = 234 // 可行
 // frObj.__proto__ = {} // 报错
-Test.prototype = {}; // 不行，因为已经实例化了
-console.log(frObj);
+Test.prototype = {} // 不行，因为已经实例化了
+console.log(frObj)
 ```
 
 ```js
-"use strict";
+'use strict'
 
 const obj = {
   _a: 1,
   b: 2,
   c: {
-    d: 4,
+    d: 4
   },
   get() {
-    return this.a;
+    return this.a
   },
   set a(newValue) {
     // this._a = newValue; 报错，不能通过 accessor property 修改
-  },
-};
-Object.freeze(obj);
-const is = Object.isFrozen(obj); // 对象是否冻结
+  }
+}
+Object.freeze(obj)
+const is = Object.isFrozen(obj) // 对象是否冻结
 
 // console.log(is); // true
 
-obj.a = 1; // 严格模式下会报错
-obj.c.d = 4; // Object.freeze 是浅冻结
-console.log(obj.a); // 不能通过 accessor property 修改
+obj.a = 1 // 严格模式下会报错
+obj.c.d = 4 // Object.freeze 是浅冻结
+console.log(obj.a) // 不能通过 accessor property 修改
 ```
 
 ```js
 // ES5 环境里，... is not an object
 // ES6 环境里，返回参数本身
-const res = Object.freeze(true);
-const arr = [1, 2, 3];
-Object.freeze(arr);
-arr.push(4); // 报错，原因如下截图(不能增加下标 3, 因为 Array 底层是一个对象)
-arr[0] = 111; // 严格模式下会报错
+const res = Object.freeze(true)
+const arr = [1, 2, 3]
+Object.freeze(arr)
+arr.push(4) // 报错，原因如下截图(不能增加下标 3, 因为 Array 底层是一个对象)
+arr[0] = 111 // 严格模式下会报错
 ```
 
 ![](image/00_Object/1607924583220.png)
@@ -520,30 +782,30 @@ arr[0] = 111; // 严格模式下会报错
 
 ```js
 Object.deepFreeze = function (o) {
-  const _keys = Object.getOwnPropertyNames(o); // 这里没有使用 Object.keys, 因为 Object. 是业务逻辑上的语法糖，它不能够取到那些不可枚举的属性，而 Object.getOwnPropertyNames 可以，它是底层的方法
+  const _keys = Object.getOwnPropertyNames(o) // 这里没有使用 Object.keys, 因为 Object. 是业务逻辑上的语法糖，它不能够取到那些不可枚举的属性，而 Object.getOwnPropertyNames 可以，它是底层的方法
 
   _keys.length > 0 &&
     _keys.forEach((key) => {
-      if (typeof o[key] === "object" && o[key] !== null) {
-        Object.deepFreeze(o[key]);
+      if (typeof o[key] === 'object' && o[key] !== null) {
+        Object.deepFreeze(o[key])
       }
-    });
+    })
 
-  return Object.freeze(o);
-};
+  return Object.freeze(o)
+}
 
 let obj = {
   a: 1,
   b: 2,
   c: {
-    d: 3,
-  },
-};
+    d: 3
+  }
+}
 
-Object.deepFreeze(obj);
+Object.deepFreeze(obj)
 
-obj.c.d = 4;
-console.log(obj);
+obj.c.d = 4
+console.log(obj)
 ```
 
 ## Object.seal 密封对象
@@ -573,88 +835,88 @@ seal()方法密封对象，防止向其添加新属性，并将所有现有属�
 **和 Object.freeze 一样，返回的对象都是对原对象的一个引用**
 
 ```js
-Object.seal(1);
+Object.seal(1)
 // TypeError: 1 is not an object (ES5 code)
 
-Object.seal(1);
+Object.seal(1)
 // 1                             (ES2015 code)
 ```
 
 ```js
 var obj = {
   prop: function () {},
-  foo: "bar",
-};
+  foo: 'bar'
+}
 
 // 可以添加新的属性
 // 可以更改或删除现有的属性
-obj.foo = "baz";
-obj.lumpy = "woof";
-delete obj.prop;
+obj.foo = 'baz'
+obj.lumpy = 'woof'
+delete obj.prop
 
-var o = Object.seal(obj);
+var o = Object.seal(obj)
 
-o === obj; // true
-Object.isSealed(obj); // === true
+o === obj // true
+Object.isSealed(obj) // === true
 
 // 仍然可以修改密封对象的属性值
-obj.foo = "quux";
+obj.foo = 'quux'
 
 // 但是你不能将属性重新定义成为访问器属性
 // 反之亦然
-Object.defineProperty(obj, "foo", {
+Object.defineProperty(obj, 'foo', {
   get: function () {
-    return "g";
-  },
-}); // throws a TypeError
+    return 'g'
+  }
+}) // throws a TypeError
 
 // 除了属性值以外的任何变化，都会失败.
-obj.quaxxor = "the friendly duck";
+obj.quaxxor = 'the friendly duck'
 // 添加属性将会失败
-delete obj.foo;
+delete obj.foo
 // 删除属性将会失败
 
 // 在严格模式下，这样的尝试将会抛出错误
 function fail() {
-  "use strict";
-  delete obj.foo; // throws a TypeError
-  obj.sparky = "arf"; // throws a TypeError
+  'use strict'
+  delete obj.foo // throws a TypeError
+  obj.sparky = 'arf' // throws a TypeError
 }
-fail();
+fail()
 
 // 通过Object.defineProperty添加属性将会报错
-Object.defineProperty(obj, "ohai", {
-  value: 17,
-}); // throws a TypeError
-Object.defineProperty(obj, "foo", {
-  value: "eit",
-}); // 通过Object.defineProperty修改属性值
+Object.defineProperty(obj, 'ohai', {
+  value: 17
+}) // throws a TypeError
+Object.defineProperty(obj, 'foo', {
+  value: 'eit'
+}) // 通过Object.defineProperty修改属性值
 ```
 
 ```js
-"use strict";
+'use strict'
 function Test() {
-  this.a = 1;
-  this.b = 2;
+  this.a = 1
+  this.b = 2
 }
 
-Test.prototype.c = 3;
-Test.prototype.d = 4;
+Test.prototype.c = 3
+Test.prototype.d = 4
 
-const test = new Test();
+const test = new Test()
 
-const newObj = Object.seal(test);
-console.log(newObj);
+const newObj = Object.seal(test)
+console.log(newObj)
 // newObj.__proto__ = {}; // 报错
 // Test.prototype.c = 123; // 可行
-Test.prototype = {}; // 不行，因为已经实例化了
-console.log(newObj);
+Test.prototype = {} // 不行，因为已经实例化了
+console.log(newObj)
 
-const frObj = Object.freeze(test);
-Test.prototype.c = 234; // 可行
+const frObj = Object.freeze(test)
+Test.prototype.c = 234 // 可行
 // frObj.__proto__ = {} // 报错
-Test.prototype = {}; // 不行，因为已经实例化了
-console.log(frObj);
+Test.prototype = {} // 不行，因为已经实例化了
+console.log(frObj)
 ```
 
 ### 深度密封对象封装
@@ -662,25 +924,25 @@ console.log(frObj);
 **和 Object.freeze 一样，他们对对象的操作都是浅操作**
 
 ```js
-const obj = { a: 1, b: 2, c: { d: 3, e: { f: 4 } } };
+const obj = { a: 1, b: 2, c: { d: 3, e: { f: 4 } } }
 Object.deepSeal = function (o) {
-  const _keys = Object.getOwnPropertyNames(o);
+  const _keys = Object.getOwnPropertyNames(o)
 
   _keys.length &&
     _keys.forEach((_k) => {
-      if (typeof o[_k] === "object" && o[_k] !== null) {
-        Object.deepSeal(o[_k]);
+      if (typeof o[_k] === 'object' && o[_k] !== null) {
+        Object.deepSeal(o[_k])
       }
-    });
+    })
 
-  return Object.seal(o);
-};
-Object.deepSeal(obj);
-obj.x = "xxx";
-obj.y = "yyy";
-obj.c.x = "ddd";
-delete obj.c.e;
-console.log(obj);
+  return Object.seal(o)
+}
+Object.deepSeal(obj)
+obj.x = 'xxx'
+obj.y = 'yyy'
+obj.c.x = 'ddd'
+delete obj.c.e
+console.log(obj)
 ```
 
 ## Object.preventExtensions
@@ -692,15 +954,15 @@ console.log(obj);
 **可修改/删除原对象的现有属性，但是不可拓展**
 
 ```js
-const obj = { b: 2, c: 3 };
-const newObj = Object.preventExtensions(obj);
+const obj = { b: 2, c: 3 }
+const newObj = Object.preventExtensions(obj)
 // console.log(obj === newObj); // true 对原对象的同一个引用
 // console.log(Object.isExtensible(obj)); // false 不可扩展
 
-obj.a = 1; // 不可扩展，严格模式下报错
-obj.b = "b"; // 可修改
-delete obj.c; // 可删除
-console.log(obj); // {b: 'b'}
+obj.a = 1 // 不可扩展，严格模式下报错
+obj.b = 'b' // 可修改
+delete obj.c // 可删除
+console.log(obj) // {b: 'b'}
 
 // Object.defineProperty(obj, "a", {
 //   value: 1,
@@ -708,35 +970,35 @@ console.log(obj); // {b: 'b'}
 ```
 
 ```js
-"use strict";
-const obj = { a: 1, b: 2 };
+'use strict'
+const obj = { a: 1, b: 2 }
 
-Object.prototype.c = 3;
+Object.prototype.c = 3
 
-Object.preventExtensions(obj);
+Object.preventExtensions(obj)
 
-obj.__proto__.c = 333; // 原型属性可以修改
-Object.prototype.c = 444;
+obj.__proto__.c = 333 // 原型属性可以修改
+Object.prototype.c = 444
 
-delete obj.__proto__.c; // 原型上的属性可以删除
+delete obj.__proto__.c // 原型上的属性可以删除
 
-obj.__proto__.x = "xxx"; // 原型上的属性可扩展
-Object.prototype.y = "yyy"; // 原型上的属性可扩展
+obj.__proto__.x = 'xxx' // 原型上的属性可扩展
+Object.prototype.y = 'yyy' // 原型上的属性可扩展
 
 // obj.__proto = {}; // 非严格模式下就会报错
 
-Object.prototype = {}; // 严格模式下报错
+Object.prototype = {} // 严格模式下报错
 
-console.log(obj);
+console.log(obj)
 ```
 
 **在 ES5 中，如果参数不是一个对象类型（而是原始类型），将抛出一个 TypeError 异常。在 ES2015 中，非对象参数将被视为一个不可扩展的普通对象，因此会被直接返回。**
 
 ```js
-Object.preventExtensions(1);
+Object.preventExtensions(1)
 // TypeError: 1 is not an object (ES5 code)
 
-Object.preventExtensions(1);
+Object.preventExtensions(1)
 // 1  (ES2015 code)
 ```
 
@@ -744,84 +1006,84 @@ Object.preventExtensions(1);
 
 ```js
 Object.deepPreventExtensions = function (o) {
-  let _keys = Object.getOwnPropertyNames(o);
+  let _keys = Object.getOwnPropertyNames(o)
 
   _keys.length &&
     _keys.forEach((_k) => {
-      if (typeof _k === "object" && _k !== null) {
-        Object.deepPreventExtensions(o[_k]);
+      if (typeof _k === 'object' && _k !== null) {
+        Object.deepPreventExtensions(o[_k])
       }
-    });
+    })
 
-  return Object.preventExtensions(o);
-};
+  return Object.preventExtensions(o)
+}
 ```
 
 ## freeze, seal, preventExtensions 的综合场景
 
 ```js
-var obj = {};
+var obj = {}
 
-Object.preventExtensions(obj); // 不可拓展
+Object.preventExtensions(obj) // 不可拓展
 
-console.log(Object.isFrozen(obj) === true); // 因为该对象为空，所以该对象在不可扩展的前提下不存在修改和删除属性，所以 obj 现在是冻结的
+console.log(Object.isFrozen(obj) === true) // 因为该对象为空，所以该对象在不可扩展的前提下不存在修改和删除属性，所以 obj 现在是冻结的
 
-console.log(Object.isSealed(obj) === true); // seal 同理，该对象的删除操作也是不可行的
+console.log(Object.isSealed(obj) === true) // seal 同理，该对象的删除操作也是不可行的
 
 // 当对象上有属性时，那么久不符合 freeze 和 seal
 ```
 
 ```js
-const obj = { a: 1 };
+const obj = { a: 1 }
 
-Object.preventExtensions(obj);
+Object.preventExtensions(obj)
 
-Object.defineProperty(obj, "a", {
-  writable: false,
-});
+Object.defineProperty(obj, 'a', {
+  writable: false
+})
 
-console.log(Object.isFrozen(obj) === false); // 不满足可删除
-console.log(Object.isSealed(obj) === false); // 不满足可删除
+console.log(Object.isFrozen(obj) === false) // 不满足可删除
+console.log(Object.isSealed(obj) === false) // 不满足可删除
 ```
 
 ```js
-const obj = { a: 1 };
+const obj = { a: 1 }
 
-Object.preventExtensions(obj);
+Object.preventExtensions(obj)
 
-Object.defineProperty(obj, "a", {
-  configurable: false,
-});
+Object.defineProperty(obj, 'a', {
+  configurable: false
+})
 
-console.log(Object.isFrozen(obj) === false); // 不满足可修改
-console.log(Object.isSealed(obj) === true);
+console.log(Object.isFrozen(obj) === false) // 不满足可修改
+console.log(Object.isSealed(obj) === true)
 ```
 
 **是冻结对象就一定是密封对象**
 
 ```js
-const o = { a: 1 };
-Object.freeze(o);
-console.log(Object.isSealed(o)); // true
+const o = { a: 1 }
+Object.freeze(o)
+console.log(Object.isSealed(o)) // true
 ```
 
 ```js
 const obj = {
   get a() {
-    return 1;
-  },
-};
+    return 1
+  }
+}
 
-obj.a = 2; // 不可修改，因为没有 setter
+obj.a = 2 // 不可修改，因为没有 setter
 
-delete obj.a;
+delete obj.a
 
-console.log(obj); // {}
+console.log(obj) // {}
 
-Object.preventExtensions(obj);
-console.log(Object.isFrozen(obj) === true);
-console.log(Object.isSealed(obj) === true);
-console.log(Object.isExtensible(obj) === false);
+Object.preventExtensions(obj)
+console.log(Object.isFrozen(obj) === true)
+console.log(Object.isSealed(obj) === true)
+console.log(Object.isExtensible(obj) === false)
 ```
 
 ## Object.entries
@@ -830,36 +1092,36 @@ console.log(Object.isExtensible(obj) === false);
 
 ```js
 const Foo = function () {
-  this.a = "a";
-  this.b = "b";
-};
-Foo.prototype.c = "c";
+  this.a = 'a'
+  this.b = 'b'
+}
+Foo.prototype.c = 'c'
 
-const obj = Object.entries(new Foo());
-console.log(obj);
+const obj = Object.entries(new Foo())
+console.log(obj)
 ```
 
 ![](image/00_Object/1607966583572.png)
 
 ```js
-const obj = {};
+const obj = {}
 
-Object.defineProperty(obj, "a", {
-  value: "a",
-  enumerable: true,
-});
+Object.defineProperty(obj, 'a', {
+  value: 'a',
+  enumerable: true
+})
 
-Object.defineProperty(obj, "b", {
-  value: "b",
-  enumerable: true,
-});
+Object.defineProperty(obj, 'b', {
+  value: 'b',
+  enumerable: true
+})
 
-Object.defineProperty(obj, "c", {
-  value: "c",
-});
+Object.defineProperty(obj, 'c', {
+  value: 'c'
+})
 
-const val = Object.entries(obj);
-console.log(val);
+const val = Object.entries(obj)
+console.log(val)
 ```
 
 ![](image/00_Object/1607966772509.png)
@@ -868,18 +1130,18 @@ console.log(val);
 
 ```js
 Object.myEntries = function (o) {
-  let _pool = [];
+  let _pool = []
 
-  if (Object.prototype.toString.call(o) === "[object Object]") {
+  if (Object.prototype.toString.call(o) === '[object Object]') {
     for (let k in o) {
       if (o.hasOwnProperty(k)) {
-        _pool.push([k, o[k]]);
+        _pool.push([k, o[k]])
       }
     }
   }
 
-  return _pool;
-};
+  return _pool
+}
 ```
 
 ## Object.fromEntries
@@ -889,14 +1151,14 @@ Object.myEntries = function (o) {
 Object.fromEntries 是与 Object.entries() 相反的方法，Object.fromEntries 将键值对列表转换为一个对象
 
 ```js
-const obj = { a: 1, b: 2 };
+const obj = { a: 1, b: 2 }
 
-const r = Object.entries(obj);
+const r = Object.entries(obj)
 
-const nObj = Object.fromEntries(r);
+const nObj = Object.fromEntries(r)
 
-console.log(nObj === obj); // false, 说明反悔了一个新对象
-console.log(nObj);
+console.log(nObj === obj) // false, 说明反悔了一个新对象
+console.log(nObj)
 ```
 
 **Object.fromEntries 接收的参数是一个类似 Array, Map 或者其他实现了可迭代协议的可迭代对象**
@@ -905,35 +1167,35 @@ console.log(nObj);
 
 ```js
 const map = new Map([
-  ["foo", "bar"],
-  ["baz", 42],
-]);
-const obj = Object.fromEntries(map);
-console.log(obj); // { foo: "bar", baz: 42 }
+  ['foo', 'bar'],
+  ['baz', 42]
+])
+const obj = Object.fromEntries(map)
+console.log(obj) // { foo: "bar", baz: 42 }
 ```
 
 ```js
 const arr = [
-  ["0", "a"],
-  ["1", "b"],
-  ["2", "c"],
-];
-const obj = Object.fromEntries(arr);
-console.log(obj); // { 0: "a", 1: "b", 2: "c" }
+  ['0', 'a'],
+  ['1', 'b'],
+  ['2', 'c']
+]
+const obj = Object.fromEntries(arr)
+console.log(obj) // { 0: "a", 1: "b", 2: "c" }
 ```
 
 ### 重写 Object.fromEntries
 
 ```js
 Object.myFronEntries = function (iterator) {
-  let _obj = {};
+  let _obj = {}
 
   for (let item of iterator) {
-    _obj[item[0]] = item[1];
+    _obj[item[0]] = item[1]
   }
 
-  return _obj;
-};
+  return _obj
+}
 ```
 
 ## 参考

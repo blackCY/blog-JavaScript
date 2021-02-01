@@ -27,20 +27,16 @@
     </script>
 
     <script>
-      function add2() {}
-      let a = 1
-      console.log(parent.add2)
-      console.log(parent.a)
-    </script>
-
-    <script>
-      var obj = {
-        ['prop' +
-        (function () {
-          return 42
-        })()]: 42
+      function UserException(message) {
+        this.message = message
+        this.name = 'xiaoming'
       }
-      console.log(obj)
+
+      UserException.prototype.toString = function () {
+        return this.name + ': "' + this.message + '"'
+      }
+
+      throw new UserException('hello')
     </script>
   </body>
 </html>
