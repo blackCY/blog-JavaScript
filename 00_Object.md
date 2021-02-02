@@ -2,6 +2,8 @@
 
 ## Object.defineProperty
 
+**IE8 不兼容**
+
 **通过对象字面量定义的对象的属性描述符默认是 true**
 
 [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
@@ -367,7 +369,7 @@ console.log(a.y) // 1
 console.log(myclass.prototype.y) // 1
 ```
 
-这里值得注意的是，使用 vite 搭建的服务器下好像默认了严格模式，都会抛出错误，而 127.0.0.1 下的本地服务器则不会
+**这里值得注意的是，使用 vite 搭建的服务器下好像默认了严格模式，都会抛出错误，而 127.0.0.1 下的本地服务器则不会**
 
 ### 一些例子
 
