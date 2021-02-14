@@ -369,7 +369,7 @@ console.log(a.y) // 1
 console.log(myclass.prototype.y) // 1
 ```
 
-**这里值得注意的是，使用 vite 搭建的服务器下好像默认了严格模式，都会抛出错误，而 127.0.0.1 下的本地服务器则不会**
+**这里值得注意的是，使用 vite 搭建的服务器下由于使用的是 ES Module，而该模块中默认使用严格模式，所以 this 是 undefined**
 
 ### 一些例子
 
